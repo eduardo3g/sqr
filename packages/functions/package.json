@@ -7,11 +7,12 @@
     "typecheck": "tsc -noEmit"
   },
   "devDependencies": {
-    "@types/node": "^18.15.3",
     "@types/aws-lambda": "^8.10.113",
+    "@types/node": "^18.15.3",
     "sst": "^2.1.35"
   },
   "dependencies": {
+    "openid-client": "^5.4.0",
     "sst": "^2.1.35"
   }
 }
