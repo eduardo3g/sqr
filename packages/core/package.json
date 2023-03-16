@@ -7,11 +7,14 @@
     "typecheck": "tsc -noEmit"
   },
   "devDependencies": {
-    "vitest": "^0.29.3",
     "@types/node": "^18.15.3",
-    "sst": "^2.1.35"
+    "sst": "^2.1.35",
+    "vitest": "^0.29.3"
   },
   "dependencies": {
+    "aws-sdk": "^2.1336.0",
+    "electrodb": "^2.4.2",
+    "spotify-api.js": "^9.2.5",
     "sst": "^2.1.35"
   }
 }
