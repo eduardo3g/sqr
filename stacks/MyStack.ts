@@ -23,7 +23,7 @@ export function API({ stack }: StackContext) {
       },
       targets: {
         queue: new Queue(stack, "user-created-queue", {
-          consumer: "packages/functions/src/events/user.created",
+          consumer: "packages/functions/src/events/user.login",
         }),
       },
     },
