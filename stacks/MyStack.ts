@@ -1,4 +1,4 @@
-import { StackContext, Api, Auth } from "sst/constructs";
+import { StackContext, Api, Auth, Table } from "sst/constructs";
 import { Config } from "sst/constructs";
 
 export function API({ stack }: StackContext) {
@@ -8,6 +8,31 @@ export function API({ stack }: StackContext) {
     "SPOTIFY_CLIENT_SECRET"
   );
 
+  const table = new Table(stack, "table", {
+    fields: {
+      pk: "string",
+      sk: "string",
+      gsi1pk: "string",
+      gsi1sk: "string",
+      gsi2pk: "string",
+      gsi2sk: "string",
+    },
+    primaryIndex: {
+      partitionKey: "pk",
+      sortKey: "sk",
+    },
+    globalIndexes: {
+      gsi1: {
+        partitionKey: "gsi1pk",
+        sortKey: "gsi1sk",
+      },
+      gsi2: {
+        partitionKey: "gsi2pk",
+        sortKey: "gsi2sk",
+      },
+    },
+  });
+
   const auth = new Auth(stack, "auth", {
     authenticator: "packages/functions/src/authenticator.handler"
   });
@@ -15,7 +40,7 @@ export function API({ stack }: StackContext) {
   const api = new Api(stack, "api", {
     defaults: {
       function: {
-        bind: [...Object.values(secrets)]
+        bind: [table, ...Object.values(secrets)]
       }
     },
     routes: {
