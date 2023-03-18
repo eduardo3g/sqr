@@ -16,6 +16,7 @@
     "@aws-sdk/client-dynamodb": "^3.292.0",
     "@aws-sdk/client-eventbridge": "^3.294.0",
     "@aws-sdk/smithy-client": "^3.292.0",
+    "aws-sdk": "^2.1338.0",
     "electrodb": "^2.4.2",
     "spotify-api.js": "^9.2.5",
     "sst": "^2.1.35"
