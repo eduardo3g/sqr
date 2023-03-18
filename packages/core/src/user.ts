@@ -1,7 +1,6 @@
 import crypto from "crypto";
-import { Config } from 'sst/node/config';
 import { Entity } from "electrodb";
-import Spotify from "spotify-api.js";
+import { Spotify } from "./spotify";
 import { Dynamo } from "./dynamo";
 import { Bus } from "./bus";
 
@@ -66,16 +65,8 @@ declare module "./bus" {
   }
 }
 
-export async function login(input: { access: string, refresh: string }) {
-  const client = await Spotify.Client.create({
-    token: {
-      token: input.access,
-      refreshToken: input.refresh,
-      clientID: Config.SPOTIFY_CLIENT_ID,
-      clientSecret: Config.SPOTIFY_CLIENT_SECRET,
-    },
-    userAuthorizedToken: true,
-  });
+export async function login(input: Spotify.Credentials) {
+  const client = await Spotify.client(input);
 
   const existing = await UserEntity.query.bySpotifyID({
     spotifyID: client.user.id,
@@ -97,7 +88,7 @@ export async function login(input: { access: string, refresh: string }) {
     return user.data;
   }
 
-  return await UserEntity.update({
+  const result = await UserEntity.update({
     userID: existing.data[0].userID,
   })
     .set({
@@ -106,4 +97,10 @@ export async function login(input: { access: string, refresh: string }) {
     }).go({
       response: "all_new",
     });
+
+  await Bus.publish("user.login", {
+    userID: result.data.userID!,
+  });
+
+  return result.data;
 };
