@@ -3,6 +3,7 @@ import { Config } from 'sst/node/config';
 import { Entity } from "electrodb";
 import Spotify from "spotify-api.js";
 import { Dynamo } from "./dynamo";
+import { Bus } from "./bus";
 
 export * as User from "./user";
 
@@ -57,7 +58,15 @@ const UserEntity = new Entity(
   Dynamo.Service
 );
 
-export async function fromToken(input: { access: string, refresh: string }) {
+declare module "./bus" {
+  export interface Events {
+    "user.login": {
+      userID: string;
+    };
+  }
+}
+
+export async function login(input: { access: string, refresh: string }) {
   const client = await Spotify.Client.create({
     token: {
       token: input.access,
@@ -81,15 +90,20 @@ export async function fromToken(input: { access: string, refresh: string }) {
       accessToken: input.access,
     }).go();
 
+    await Bus.publish("user.login", {
+      userID: user.data.userID,
+    });
+
     return user.data;
   }
 
-  await UserEntity.update({
+  return await UserEntity.update({
     userID: existing.data[0].userID,
-  }).set({
-    refreshToken: input.refresh,
-    accessToken: input.access,
-  }).go({
-    response: "all_new",
-  });
+  })
+    .set({
+      refreshToken: input.refresh,
+      accessToken: input.access,
+    }).go({
+      response: "all_new",
+    });
 };

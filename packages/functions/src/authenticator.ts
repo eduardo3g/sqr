@@ -15,12 +15,10 @@ export const handler = AuthHandler({
         token_endpoint: "https://accounts.spotify.com/api/token"
       }),
       onSuccess: async (tokenset, _client) => {
-        console.log(
-          await User.fromToken({
-            access: tokenset.access_token!,
-            refresh: tokenset.refresh_token!,
-          })
-        );
+        await User.login({
+          access: tokenset.access_token!,
+          refresh: tokenset.refresh_token!,
+        });
 
         return {
           statusCode: 200,

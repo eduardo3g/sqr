@@ -1,4 +1,11 @@
-import { StackContext, Api, Auth, Table } from "sst/constructs";
+import {
+  StackContext,
+  Api,
+  Auth,
+  Table,
+  EventBus,
+  Queue
+} from "sst/constructs";
 import { Config } from "sst/constructs";
 
 export function API({ stack }: StackContext) {
@@ -7,6 +14,20 @@ export function API({ stack }: StackContext) {
     "SPOTIFY_CLIENT_ID",
     "SPOTIFY_CLIENT_SECRET"
   );
+
+  const bus = new EventBus(stack, "bus");
+  bus.addRules(stack, {
+    "user.created": {
+      pattern: {
+        detailType: ["user.login"],
+      },
+      targets: {
+        queue: new Queue(stack, "user-created-queue", {
+          consumer: "packages/functions/src/events/user.created",
+        }),
+      },
+    },
+  });
 
   const table = new Table(stack, "table", {
     fields: {
@@ -40,7 +61,7 @@ export function API({ stack }: StackContext) {
   const api = new Api(stack, "api", {
     defaults: {
       function: {
-        bind: [table, ...Object.values(secrets)]
+        bind: [bus, table, ...Object.values(secrets)]
       }
     },
     routes: {
@@ -54,5 +75,6 @@ export function API({ stack }: StackContext) {
 
   stack.addOutputs({
     ApiEndpoint: api.url,
+    Bs: bus.eventBusArn,
   });
 }
