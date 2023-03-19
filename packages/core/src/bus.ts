@@ -44,6 +44,7 @@ export function subscribe<Type extends EventTypes>(
       try {
         await handler(detail.properties);
       } catch (err) {
+        console.error("Failed to process event", err);
         failed.push(record.messageId);
       }
     }
