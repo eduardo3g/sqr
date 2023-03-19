@@ -28,6 +28,7 @@ const UserEntity = new Entity(
       },
       accessToken: {
         type: "string",
+        required: true,
       },
     },
     indexes: {
@@ -63,6 +64,14 @@ declare module "./bus" {
       userID: string;
     };
   }
+}
+
+export async function fromID(userID: string) {
+  const result = await UserEntity.get({
+    userID,
+  }).go();
+
+  return result.data;
 }
 
 export async function login(input: Spotify.Credentials) {
