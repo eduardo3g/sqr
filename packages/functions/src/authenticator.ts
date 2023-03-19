@@ -8,7 +8,8 @@ export const handler = AuthHandler({
     spotify: OauthAdapter({
       clientID: Config.SPOTIFY_CLIENT_ID,
       clientSecret: Config.SPOTIFY_CLIENT_SECRET,
-      scope: "playlist-read-private user-read-email",
+      scope:
+        "playlist-read-private user-read-email user-library-read playlist-modify-private",
       issuer: new Issuer({
         issuer: "https://accounts.spotify.com",
         authorization_endpoint: "https://accounts.spotify.com/authorize",
