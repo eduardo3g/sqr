@@ -15,20 +15,6 @@ export function API({ stack }: StackContext) {
     "SPOTIFY_CLIENT_SECRET"
   );
 
-  const bus = new EventBus(stack, "bus");
-  bus.addRules(stack, {
-    "user.created": {
-      pattern: {
-        detailType: ["user.login"],
-      },
-      targets: {
-        queue: new Queue(stack, "user-created-queue", {
-          consumer: "packages/functions/src/events/user.login",
-        }),
-      },
-    },
-  });
-
   const table = new Table(stack, "table", {
     fields: {
       pk: "string",
@@ -50,6 +36,30 @@ export function API({ stack }: StackContext) {
       gsi2: {
         partitionKey: "gsi2pk",
         sortKey: "gsi2sk",
+      },
+    },
+  });
+
+  const bus = new EventBus(stack, "bus");
+  bus.addRules(stack, {
+    "user.created": {
+      pattern: {
+        detailType: ["user.login"],
+      },
+      targets: {
+        queue: new Queue(stack, "user-created-queue", {
+          consumer: {
+            function: {
+              handler: "packages/functions/src/events/user.login",
+              timeout: "15 minutes",
+              bind: [
+                table,
+                secrets.SPOTIFY_CLIENT_ID,
+                secrets.SPOTIFY_CLIENT_SECRET,
+              ],
+            },
+          },
+        }),
       },
     },
   });
