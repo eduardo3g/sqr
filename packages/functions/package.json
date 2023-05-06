@@ -9,11 +9,11 @@
   "devDependencies": {
     "@types/aws-lambda": "^8.10.113",
     "@types/node": "^18.15.3",
-    "sst": "^2.1.35"
+    "sst": "2.8.5"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.292.0",
     "openid-client": "^5.4.0",
-    "sst": "^2.1.35"
+    "sst": "2.8.5"
   }
 }
