@@ -85,6 +85,6 @@ export function API({ stack }: StackContext) {
 
   stack.addOutputs({
     ApiEndpoint: api.url,
-    Bs: bus.eventBusArn,
+    Bus: bus.eventBusArn,
   });
 }
